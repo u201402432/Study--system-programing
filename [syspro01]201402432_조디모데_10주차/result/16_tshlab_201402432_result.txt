@@ -1,0 +1,75 @@
+Running trace16.txt...
+Success: The test and reference outputs for trace16.txt matched!
+Running trace16.txt...
+Success: The test and reference outputs for trace16.txt matched!
+Running trace16.txt...
+Success: The test and reference outputs for trace16.txt matched!
+Running trace16.txt...
+Success: The test and reference outputs for trace16.txt matched!
+Running trace16.txt...
+Oops: test and reference outputs for trace16.txt differed.
+
+Test output:
+#
+# trace16.txt - Process bg builtin command (two jobs)
+#
+tsh> ./myspin1 10 &
+(1) (27372) ./myspin1 10 &
+tsh> ./mytstpp
+Job [2] (27374) stopped by signal 20
+tsh> jobs
+(1) (27372) Running    ./myspin1 10 &
+(2) (27374) Stopped    ./mytstpp
+tsh> bg %2
+[2] (27374) ./mytstpp
+waitpid error: Interrupted system call
+tsh> jobs
+trace16.txt: Runtrace timed out waiting for next shell prompt
+Child shell terminated normally with status 1
+
+Reference output:
+#
+# trace16.txt - Process bg builtin command (two jobs)
+#
+tsh> ./myspin1 10 &
+(1) (27459) ./myspin1 10 &
+tsh> ./mytstpp
+Job [2] (27462) stopped by signal 20
+tsh> jobs
+(1) (27459) Running ./myspin1 10 &
+(2) (27462) Stopped ./mytstpp
+tsh> bg %2
+[2] (27462) ./mytstpp
+tsh> jobs
+(1) (27459) Running ./myspin1 10 &
+(2) (27462) Running ./mytstpp
+
+Output of 'diff test reference':
+5c5
+< (1) (27372) ./myspin1 10 &
+---
+> (1) (27459) ./myspin1 10 &
+7c7
+< Job [2] (27374) stopped by signal 20
+---
+> Job [2] (27462) stopped by signal 20
+9,10c9,10
+< (1) (27372) Running    ./myspin1 10 &
+< (2) (27374) Stopped    ./mytstpp
+---
+> (1) (27459) Running ./myspin1 10 &
+> (2) (27462) Stopped ./mytstpp
+12,13c12
+< [2] (27374) ./mytstpp
+< waitpid error: Interrupted system call
+---
+> [2] (27462) ./mytstpp
+15,16c14,15
+< trace16.txt: Runtrace timed out waiting for next shell prompt
+< Child shell terminated normally with status 1
+---
+> (1) (27459) Running ./myspin1 10 &
+> (2) (27462) Running ./mytstpp
+
+Running trace16.txt...
+Success: The test and reference outputs for trace16.txt matched!
